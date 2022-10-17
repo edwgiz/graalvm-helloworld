@@ -1,3 +1,5 @@
+[![Build Status](https://github.com/edwgiz/graalvm-helloworld/workflows/CI%20with%20Maven%20and%20Docker/badge.svg?branch=master)](https://github.com/edwgiz/graalvm-helloworld/actions?query=workflow%3ACI%20with%20Maven%20and%20Docker)
+
 # Dockerized GraalVM Application Seed
 
 Simple "Hello World" Java application packed into single
