@@ -1,4 +1,4 @@
-FROM ubuntu:22.10 AS builder
+FROM ubuntu:23.10 AS builder
 
 WORKDIR /root
 
@@ -14,17 +14,16 @@ RUN apt install -y curl
 # Setup GraalVm JDK
 #
 RUN mkdir /usr/lib/jvm \
- && curl https://github.com/graalvm/graalvm-ce-dev-builds/releases/download/23.0.0-dev-20221012_2107/graalvm-ce-java19-linux-amd64-dev.tar.gz \
+ && curl https://github.com/graalvm/graalvm-ce-dev-builds/releases/download/23.1.0-dev-20230512_0540/graalvm-community-java20-linux-amd64-dev.tar.gz \
     -L --output - | tar -xzf - -C /usr/lib/jvm
-ENV PATH=/usr/lib/jvm/graalvm-ce-java19-23.0.0-dev/bin:$PATH
-ENV JAVA_HOME=/usr/lib/jvm/graalvm-ce-java19-23.0.0-dev
-
+ENV JAVA_HOME=/usr/lib/jvm/graalvm-community-openjdk-20+34.1
+ENV PATH=$JAVA_HOME/bin:$PATH
 
 #
 # Setup GraalVm native-image
 #
 RUN gu install native-image \
- && ln -s /usr/lib/x86_64-linux-gnu/libz.a /usr/lib/jvm/graalvm-ce-java19-23.0.0-dev/lib/static/linux-amd64/musl/ \
+ && ln -s /usr/lib/x86_64-linux-gnu/libz.a $JAVA_HOME/lib/static/linux-amd64/musl/ \
  && apt install -y build-essential libz-dev zlib1g-dev
 
 
@@ -46,7 +45,7 @@ RUN apt install -y upx
 # Build Binary Executable
 #
 COPY ./target/app.jar ./
-RUN native-image --static --libc=musl -jar app.jar \
+RUN native-image --static --libc=musl -march=native -jar app.jar \
  && upx --lzma --best app -o app.upx
 
 
